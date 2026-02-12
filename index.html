@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            /* Более насыщенный, «вкусный» бежево-персиковый фон с градиентом */
+            background: radial-gradient(circle, #f5d6b1 0%, #e5b37e 100%);
+            overflow: hidden;
+            font-family: "Tahoma", sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Контейнер для сердец */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            /* Начальная позиция выше экрана */
+            top: -60px;
+            animation: fall linear infinite;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                /* Легкое смещение по горизонтали для эффекта ветра */
+                transform: translate(100px, 110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Окно Windows XP */
+        .window {
+            width: 350px;
+            background: #ece9d8;
+            border: 3px solid #0052e4;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 15px 15px 30px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 100;
+        }
+
+        .title-bar {
+            background: linear-gradient(to bottom, #0058e6 0%, #3d95ff 10%, #0058e6 50%, #0046b4 100%);
+            padding: 5px 10px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .content {
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 19px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .buttons {
+            padding: 0 20px 25px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 7px 20px;
+            border: 2px solid #003c74;
+            background: #f0f0f0;
+            cursor: pointer;
+            min-width: 90px;
+            font-weight: bold;
+            box-shadow: inset -2px -2px 1px #888, inset 1px 1px 1px #fff;
+        }
+
+        #no-btn {
+            position: relative;
+            transition: 0.1s;
+        }
+
+        .close-btn {
+            background: #e04343;
+            border: 1px solid white;
+            color: white;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 18px;
+            font-size: 14px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hearts-container" id="hearts-container"></div>
+
+    <div class="window">
+        <div class="title-bar">
+            <span>Microsoft Cupid</span>
+            <div class="close-btn" onclick="alert('Access Denied: You must answer!')">X</div>
+        </div>
+        <div class="content" id="main-content">
+            Would u be my valentine?
+        </div>
+        <div class="buttons" id="btn-group">
+            <button id="yes-btn">Yes</button>
+            <button id="no-btn">No</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ЗАПОЛНИ СВОИ ДАННЫЕ ---
+        const TG_TOKEN = '8296689006:AAEkfloTRNSe_edwoswc9dJSHa7LCwRr5q4';
+        const TG_ID = '1433727546';
+
+        // Исправленная форма сердечка (SVG Path)
+        const heartSVG = `
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 28.5L13.8 26.4C6.4 19.7 1.5 15.2 1.5 9.7C1.5 5.3 4.9 1.9 9.3 1.9C11.8 1.9 14.2 3.1 15.7 5C17.2 3.1 19.6 1.9 22.1 1.9C26.5 1.9 29.9 5.3 29.9 9.7C29.9 15.2 25 19.7 17.6 26.4L16 28.5Z" fill="#ff4d6d" stroke="#c9184a" stroke-width="1"/>
+            </svg>
+        `;
+
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            for (let i = 0; i < 45; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = heartSVG;
+                
+                // Равномерный спавн по всей ширине
+                heart.style.left = Math.random() * 100 + '%';
+                
+                // Случайная скорость (от 4 до 8 секунд)
+                heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                
+                // Задержка появления, чтобы они не летели кучей в начале
+                heart.style.animationDelay = (Math.random() * 8) + 's';
+                
+                // Случайный размер для объема
+                const size = Math.random() * 20 + 30;
+                heart.style.width = size + 'px';
+                
+                container.appendChild(heart);
+            }
+        }
+
+        const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
+
+        // Убегающая кнопка
+        const moveButton = () => {
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 50);
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        };
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+
+        // Нажатие на "Да"
+        yesBtn.addEventListener('click', () => {
+            confetti({ 
+                particleCount: 200, 
+                spread: 90, 
+                origin: { y: 0.6 },
+                colors: ['#ff4d6d', '#ff758f', '#ffffff'] 
+            });
+            
+            document.getElementById('main-content').innerHTML = "I LOVE YOU! ❤️<br><span style='font-size:14px; font-weight:normal;'>Check Telegram!</span>";
+            document.getElementById('btn-group').style.display = 'none';
+
+            if(TG_TOKEN !== 'ТВОЙ_ТОКЕН_БОТА') {
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent("ОНА СКАЗАЛА ДА! ❤️")}`);
+            }
+        });
+
+        createHearts();
+    </script>
+</body>
+</html>
